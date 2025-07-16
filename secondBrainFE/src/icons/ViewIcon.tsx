@@ -2,7 +2,7 @@ import { iconSizeVariants} from "."
 import type {IconProps} from "."
 
 export const ViewIcon = ({size= "md"}:IconProps) => {
-    return <svg fill="#000000" height="25px" width="25px" version="1.1" id="Layer_1" className={iconSizeVariants[size]} xmlns="http://www.w3.org/2000/svg"
+    return <svg  height="25px" width="25px" fill="currentColor" version="1.1" id="Layer_1" className={iconSizeVariants[size]} xmlns="http://www.w3.org/2000/svg"
     //@ts-ignore
 	 viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve">
 <g id="view">

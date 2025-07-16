@@ -1,48 +1,63 @@
 import { useEffect } from "react";
 import { ViewIcon } from "../../icons/ViewIcon";
-import { CrossIcon } from "../../icons/CrossIcon";
+import { DeleteIcon } from "../../icons/DeleteIcon";
 
 interface CardProps {
+  id: string;
   title: string;
   link: string;
   type: "twitter" | "youtube";
+  onDelete: (id: string) => void;
 }
 
-export function Card({ title, link, type }: CardProps) {
+export function Card({ id, title, link, type, onDelete }: CardProps) {
   useEffect(() => {
     if (type === "twitter") {
+      const scriptId = "twitter-widgets-script";
+      document.getElementById(scriptId)?.remove();
+      
       const script = document.createElement("script");
+      script.id = scriptId;
       script.src = "https://platform.twitter.com/widgets.js";
       script.async = true;
       document.body.appendChild(script);
+
+      return () => {
+        document.getElementById(scriptId)?.remove();
+      };
     }
   }, [type]);
 
-  function getYouTubeVideoId(url) {
-    // Just get the video ID from the URL
-    if (url.includes('v=')) {
-      return url.split('v=')[1].split('&')[0];
+  function getYouTubeVideoId(url: string): string | null {
+    let videoId: string | null = null;
+    try {
+      const urlObj = new URL(url);
+      if (urlObj.hostname === "www.youtube.com") {
+        videoId = urlObj.searchParams.get("v");
+      } else if (urlObj.hostname === "youtu.be") {
+        videoId = urlObj.pathname.slice(1);
+      }
+    } catch (e) {
+      console.error("Invalid URL for YouTube parsing", e);
     }
-    if (url.includes('youtu.be/')) {
-      return url.split('youtu.be/')[1].split('?')[0];
-    }
-    return null;
+    return videoId;
   }
 
   const renderContent = () => {
     if (type === "youtube") {
       const videoId = getYouTubeVideoId(link);
-      if (!videoId) return <div>Invalid YouTube URL</div>;
+      if (!videoId) return <div className="text-red-500">Invalid YouTube URL</div>;
       
       return (
-        <div className="w-full h-60">
+        <div className="aspect-video w-full">
           <iframe
-            className="w-full h-full rounded"
+            className="w-full h-full rounded-md"
             src={`https://www.youtube.com/embed/${videoId}`}
-            title="YouTube video"
+            title="YouTube video player"
             frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-          />
+          ></iframe>
         </div>
       );
     }
@@ -51,7 +66,7 @@ export function Card({ title, link, type }: CardProps) {
       const twitterUrl = link.replace('x.com', 'twitter.com');
       return (
         <div className="w-full">
-          <blockquote className="twitter-tweet">
+          <blockquote className="twitter-tweet" data-theme="dark">
             <a href={twitterUrl}></a>
           </blockquote>
         </div>
@@ -62,22 +77,26 @@ export function Card({ title, link, type }: CardProps) {
   };
 
   return (
-    <div className="border rounded-lg p-4 mt-8 ml-6 bg-white shadow-sm w-96">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{title}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <a href={link} target="_blank" rel="noopener noreferrer">
+    <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-col gap-4 dark:bg-slate-800 dark:border-slate-700">
+      <div className="flex justify-between items-center">
+        <span className="font-semibold text-gray-800 truncate pr-2 dark:text-slate-200">{title}</span>
+        <div className="flex items-center gap-3 flex-shrink-0 text-gray-500 dark:text-gray-400">
+          <a href={link} target="_blank" rel="noopener noreferrer" aria-label="View original content" className="hover:text-gray-800 dark:hover:text-white transition-colors">
             <ViewIcon size="md" />
           </a>
-          <CrossIcon/>
+          <button 
+            onClick={() => onDelete(id)} 
+            aria-label="Delete content" 
+            className="hover:text-red-500 dark:hover:text-red-400 transition-colors"
+          >
+            <DeleteIcon />
+          </button>
         </div>
       </div>
       
-      {/* Content */}
-      {renderContent()}
+      <div className="w-full h-full flex items-center justify-center">
+        {renderContent()}
+      </div>
     </div>
   );
 }

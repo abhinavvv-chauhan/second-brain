@@ -1,5 +1,4 @@
 "use strict";
-// import mongoose, {model, Schema} from "mongoose"
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,45 +32,19 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkModel = exports.ContentModel = exports.UserModel = void 0;
-// mongoose.connect("mongodb+srv://abhinavchauhan593:8v!ar2vDHubv!4A@cluster0.04khaj8.mongodb.net/second_brain");
-// const UserSchema = new Schema({
-//     username: {type: String , unique: true, required: true},
-//     password: {type: String , required: true},
-// })
-// export const UserModel = model("User",UserSchema)
-// const ContentSchema = new Schema({
-//     title: String,
-//     link: String,
-//     tags: [{type: mongoose.Types.ObjectId, ref: 'Tag'}],
-//     userId: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
-// })
-// export const ContentModel = model("Content", ContentSchema)
-// const LinkSchema = new Schema({
-//     hash: String,
-//     userId: {type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true}
-// })
-// export const LinkModel = model("Links",LinkSchema)
 const mongoose_1 = __importStar(require("mongoose"));
-mongoose_1.default.connect("mongodb+srv://abhinavchauhan593:8v!ar2vDHubv!4A@cluster0.04khaj8.mongodb.net/second_brain");
-// Add connection event listeners for debugging
-mongoose_1.default.connection.on('connected', () => {
-    console.log('✅ Connected to MongoDB');
-});
-mongoose_1.default.connection.on('error', (err) => {
-    console.error('❌ MongoDB connection error:', err);
-});
-mongoose_1.default.connection.on('disconnected', () => {
-    console.log('❌ Disconnected from MongoDB');
-});
-// Connect to MongoDB
-mongoose_1.default.connect("mongodb+srv://abhinavchauhan593:8v!ar2vDHubv!4A@cluster0.04khaj8.mongodb.net/second_brain")
-    .then(() => console.log('✅ MongoDB connection initiated'))
-    .catch(err => console.error('❌ MongoDB connection failed:', err));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const MONGO_URL = process.env.MONGODB_URL;
+mongoose_1.default.connect(MONGO_URL);
 const UserSchema = new mongoose_1.Schema({
     username: { type: String, unique: true, required: true },
-    password: { type: String, required: true }, // ✅ Removed unique: true
+    password: { type: String, required: true }
 });
 exports.UserModel = (0, mongoose_1.model)("User", UserSchema);
 const ContentSchema = new mongoose_1.Schema({

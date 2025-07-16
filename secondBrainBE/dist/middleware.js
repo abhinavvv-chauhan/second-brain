@@ -7,16 +7,28 @@ exports.userMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("./config");
 const userMiddleware = (req, res, next) => {
-    const header = req.headers["authorization"];
-    const decoded = jsonwebtoken_1.default.verify(header, config_1.JWT_PASSWORD);
-    if (decoded) {
-        //@ts-ignore
-        req.userId = decoded.id;
-        next();
-    }
-    else {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(403).json({
-            message: "You are not logged in"
+            message: "Authentication token is required"
+        });
+        return;
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, config_1.JWT_SECRET);
+        if (decoded && typeof decoded === 'object' && 'id' in decoded) {
+            // @ts-ignore
+            req.userId = decoded.id;
+            next();
+        }
+        else {
+            throw new Error('Invalid token payload');
+        }
+    }
+    catch (err) {
+        res.status(403).json({
+            message: "Invalid or expired token"
         });
     }
 };

@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../../config";
-import { CrossIcon } from "../../icons/CrossIcon";
 import { Button } from "./button";
 import { Input } from "./input";
+import { DeleteIcon } from "../../icons/DeleteIcon";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 //@ts-ignore
 enum ContentType {
@@ -34,13 +35,13 @@ export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
     setLoading(true);
     try {
       await axios.post(`${BACKEND_URL}/api/v1/content`, {
-        title,
-        link,
-        type
+          title,
+          link,
+          type
       }, {
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
+          headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
       });
       onClose();
     } catch (err) {
@@ -58,7 +59,7 @@ export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-lg font-semibold">Add Content</h2>
           <button onClick={onClose}>
-            <CrossIcon />
+            <DeleteIcon />
           </button>
         </div>
 

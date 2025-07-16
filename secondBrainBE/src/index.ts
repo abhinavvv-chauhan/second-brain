@@ -1,22 +1,27 @@
 import express from "express";
 import { ContentModel, LinkModel, UserModel } from "./db";
+import { Request, Response } from 'express';
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt'
 import { z } from "zod";
-import cors from "cors"
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
-app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"], 
+const corsOptions = {
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
-import { JWT_PASSWORD } from "./config";
+import { JWT_SECRET } from "./config";
 import { userMiddleware } from "./middleware";
 import { random } from "./utils";
 import mongoose from "mongoose";
@@ -98,7 +103,7 @@ app.post("/api/v1/signin", async (req,res) => {
         if(passwordMatch){
             const token = jwt.sign({
                 id: existingUser._id
-            },JWT_PASSWORD);
+            },JWT_SECRET);
 
             res.json({
                 token
@@ -161,25 +166,35 @@ app.get("/api/v1/content",userMiddleware, async (req,res) => {
     }
 })
 
-app.delete("/api/v1/content", userMiddleware, async (req,res) => {
-    try {
-        const contentId = req.body.contentId;
-        await ContentModel.deleteMany({
-            contentId,
-            //@ts-ignore
-            userId: req.userId,
-        })
+app.delete("/api/v1/content", userMiddleware, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { contentId } = req.body;
 
-        res.json({
-            message:"Deleted"
-        })
-    } catch (error) {
-        console.error("Delete content error:", error);
-        res.status(500).json({
-            message: "Error deleting content"
-        });
+    if (!contentId) {
+      res.status(400).json({ message: "Content ID is required" });
+      return;
     }
-})
+
+    const result = await ContentModel.deleteOne({
+      _id: contentId,
+      // @ts-ignore
+      userId: req.userId,
+    });
+
+    if (result.deletedCount === 0) {
+      res.status(404).json({
+        message: "Content not found or you are not authorized to delete it.",
+      });
+      return; 
+    }
+
+    res.json({ message: "Content deleted successfully" });
+
+  } catch (error) {
+    console.error("Delete content error:", error);
+    res.status(500).json({ message: "Error deleting content" });
+  }
+});
 
 app.post("/api/v1/brain/share",userMiddleware, async (req,res) => {
     try {
@@ -202,7 +217,7 @@ app.post("/api/v1/brain/share",userMiddleware, async (req,res) => {
                 hash: hash
             })
             res.json({
-                message: "/share/"+hash
+                hash:hash
             })
         }else{
             await LinkModel.deleteOne({

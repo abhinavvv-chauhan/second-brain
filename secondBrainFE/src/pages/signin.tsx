@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../icons/Logo';
 import axios from 'axios';
-import { BACKEND_URL } from '../config';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function Signin() {
   const [formData, setFormData] = useState({
@@ -53,29 +53,23 @@ export function Signin() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Half - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 relative overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
           <div className="absolute top-0 -right-4 w-72 h-72 bg-gray-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
           <div className="absolute -bottom-8 left-20 w-72 h-72 bg-gray-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
         </div>
         
-        {/* Branding Content */}
         <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
           <div className="text-center">
-            {/* Large Logo */}
             <div className="mb-20 flex justify-center text-white transform scale-[3]">
               <Logo />
             </div>
             
-            {/* Site Name */}
             <h1 className="text-6xl font-bold text-white mb-6 tracking-tight">
               Second Brain
             </h1>
             
-            {/* Tagline */}
             <p className="text-xl text-gray-100 font-light leading-relaxed max-w-md">
               Organize your thoughts, amplify your intelligence, and unlock your potential.
             </p>
@@ -83,10 +77,8 @@ export function Signin() {
         </div>
       </div>
 
-      {/* Right Half - Signin Form */}
       <div className="w-full lg:w-1/2 bg-gray-50 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {/* Mobile Logo (only visible on small screens) */}
           <div className="lg:hidden text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="transform scale-150 mr-4">
@@ -96,13 +88,11 @@ export function Signin() {
             </div>
           </div>
 
-          {/* Form Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
             <p className="text-gray-600">Sign in to access your second brain</p>
           </div>
 
-          {/* Signin Form */}
           <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-200 backdrop-blur-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -140,20 +130,18 @@ export function Signin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full cursor-pointer bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 outline-none transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              >
+                className="w-full cursor-pointer bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 
+                          hover:to-gray-900 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 
+                          focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 outline-none transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
 
-            {/* Sign Up Link */}
             <div className="mt-6 text-center">
               <p className="text-gray-600">
                 Don't have an account?{' '}
-                <Link 
-                  to="/signup" 
-                  className="text-gray-700 hover:text-gray-900 font-semibold transition-colors"
-                >
+                <Link to="/signup" 
+                  className="text-gray-700 hover:text-gray-900 font-semibold transition-colors">
                   Sign up
                 </Link>
               </p>

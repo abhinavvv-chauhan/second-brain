@@ -94,7 +94,7 @@ app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (passwordMatch) {
             const token = jsonwebtoken_1.default.sign({
                 id: existingUser._id
-            }, config_1.JWT_PASSWORD);
+            }, config_1.JWT_SECRET);
             res.json({
                 token
             });
@@ -156,21 +156,29 @@ app.get("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(
 }));
 app.delete("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const contentId = req.body.contentId;
-        yield db_1.ContentModel.deleteMany({
-            contentId,
-            //@ts-ignore
+        const { contentId } = req.body;
+        if (!contentId) {
+            // ✅ Removed 'return' from this line
+            res.status(400).json({ message: "Content ID is required" });
+            return; // Use a simple return to exit
+        }
+        const result = yield db_1.ContentModel.deleteOne({
+            _id: contentId,
+            // @ts-ignore
             userId: req.userId,
         });
-        res.json({
-            message: "Deleted"
-        });
+        if (result.deletedCount === 0) {
+            // ✅ Removed 'return' from this line
+            res.status(404).json({
+                message: "Content not found or you are not authorized to delete it.",
+            });
+            return; // Use a simple return to exit
+        }
+        res.json({ message: "Content deleted successfully" });
     }
     catch (error) {
         console.error("Delete content error:", error);
-        res.status(500).json({
-            message: "Error deleting content"
-        });
+        res.status(500).json({ message: "Error deleting content" });
     }
 }));
 app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -194,7 +202,7 @@ app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awa
                 hash: hash
             });
             res.json({
-                message: "/share/" + hash
+                hash: hash
             });
         }
         else {
