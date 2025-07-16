@@ -13,20 +13,10 @@ interface CardProps {
 export function Card({ id, title, link, type, onDelete }: CardProps) {
   useEffect(() => {
     if (type === "twitter") {
-      const scriptId = "twitter-widgets-script";
-      document.getElementById(scriptId)?.remove();
-      
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://platform.twitter.com/widgets.js";
-      script.async = true;
-      document.body.appendChild(script);
-
-      return () => {
-        document.getElementById(scriptId)?.remove();
-      };
+      //@ts-ignore
+      window.twttr?.widgets.load();
     }
-  }, [type]);
+  }, [type, link]);
 
   function getYouTubeVideoId(url: string): string | null {
     let videoId: string | null = null;
