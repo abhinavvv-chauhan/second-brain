@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 import { Button } from "./button";
-import { Input } from "./input";
-import { CrossIcon } from "../../icons/crossIcon"; 
+import { CrossIcon } from "../../icons/crossIcon";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -18,8 +17,8 @@ interface CreateContentModalProps {
 }
 
 export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
-  const titleRef = useRef<HTMLInputElement>();
-  const linkRef = useRef<HTMLInputElement>();
+  const titleRef = useRef<HTMLInputElement>(null);
+  const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState(ContentType.Youtube);
   const [loading, setLoading] = useState(false);
 
@@ -69,17 +68,27 @@ export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium dark:text-slate-300">Title</label>
-            <Input reference={titleRef} placeholder="Enter title" />
+            <input
+              ref={titleRef}
+              placeholder="Enter title"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400
+                         focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+                         dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder-slate-400 dark:focus:ring-sky-500 dark:focus:border-sky-500"/>
           </div>
 
           <div>
             <label className="text-sm font-medium dark:text-slate-300">Link</label>
-            <Input reference={linkRef} placeholder="Enter link" />
+            <input
+              ref={linkRef}
+              placeholder="Enter link"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400
+                         focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+                         dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder-slate-400 dark:focus:ring-sky-500 dark:focus:border-sky-500"/>
           </div>
 
           <div>
             <label className="text-sm font-medium dark:text-slate-300 mb-2 block">Type</label>
-            <div className="flex rounded-lg p-1 bg-gray-100 dark:bg-slate-900">
+            <div className="flex gap-x-1 rounded-lg p-1 bg-gray-100 dark:bg-slate-900">
               <button
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-semibold transition-colors duration-200 ${type === ContentType.Youtube ? selectedTypeStyle : unselectedTypeStyle}`}
                 onClick={() => setType(ContentType.Youtube)}
