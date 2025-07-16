@@ -52,10 +52,6 @@ export function Dashboard() {
   };
 
   const handleDelete = async (contentId: string) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) {
-      return;
-    }
-    
     try {
       await axios.delete(`${BACKEND_URL}/api/v1/content`, {
         headers: {
