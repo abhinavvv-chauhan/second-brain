@@ -42,7 +42,7 @@ export function Dashboard() {
         { share: true },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-      setShareUrl(`http://localhost:5173/share/${response.data.hash}`);
+      setShareUrl(`${window.location.origin}/share/${response.data.hash}`);
     } catch (error) {
       console.error('Share error:', error);
       alert('Failed to generate share link');
