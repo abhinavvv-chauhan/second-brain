@@ -1,13 +1,14 @@
-import express from "express";
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '../../../packages/backend-common/.env') });
+
+import express, { Request, Response } from "express";
 import { ContentModel, LinkModel, UserModel } from "./db";
-import { Request, Response } from 'express';
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt'
 import { z } from "zod";
 import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app = express();
 
@@ -25,6 +26,10 @@ import { JWT_SECRET } from "./config";
 import { userMiddleware } from "./middleware";
 import { random } from "./utils";
 import mongoose from "mongoose";
+
+app.get("/", (req: Request, res: Response) => {
+    res.status(200).json({ message: "Server is healthy and running." });
+});
 
 //@ts-ignore
 app.post("/api/v1/signup", async (req, res) => {
